@@ -1,0 +1,47 @@
+name: Deploy Dockerized Web Application
+
+on:
+  push:
+    branches:
+      - main  # This will trigger the workflow on every push to the main branch
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest  # Use the latest Ubuntu runner
+
+    steps:
+      # Step 1: Checkout the repository
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      # Step 2: Set up Docker Buildx for building Docker images
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
+
+      # Step 3: Login to Docker Hub
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      # Step 4: Build and push the Docker image
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v2
+        with:
+          context: .
+          push: true
+          tags: timetitipon/test:latest  # Replace with your Docker image name
+
+      # Step 5: Deploy to the server (if you are using Docker on a server)
+      - name: Deploy to server using SSH
+        uses: appleboy/ssh-action@v0.1.7
+        with:
+          host: ${{ secrets.HOST_SERVER }}
+          username: ${{ secrets.HOST_USER }}
+          key: ${{ secrets.HOST_SSH_KEY }}
+          port: 22
+          script: |
+            docker pull timetitipon/test:latest  # Pull the latest Docker image
+            docker-compose down  # Stop any running containers
+            docker-compose up -d  # Start containers in detached mode

@@ -1,0 +1,5 @@
+services:
+  web:
+    image: timetitipon/test
+    ports:
+      - "8105:80"
