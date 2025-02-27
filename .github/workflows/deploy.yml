@@ -31,7 +31,7 @@ jobs:
         with:
           context: .
           push: true
-          tags: timetitipon/test:latest  # Replace with your Docker image name
+          tags: timetitipon/test:v2.1  # Replace with your Docker image name
 
       # Step 5: Deploy to the server (if you are using Docker on a server)
       - name: Deploy to server using SSH
@@ -42,6 +42,6 @@ jobs:
           key: ${{ secrets.HOST_SSH_KEY }}
           port: 22
           script: |
-            docker pull timetitipon/test:latest  # Pull the latest Docker image
+            docker pull timetitipon/test:v2.1  # Pull the latest Docker image
             docker-compose down  # Stop any running containers
             docker-compose up -d  # Start containers in detached mode
