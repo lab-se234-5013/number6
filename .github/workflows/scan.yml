@@ -18,17 +18,21 @@ jobs:
       # Step 2: Install DeepSource CLI
       - name: Install DeepSource CLI
         run: |
-          curl https://deepsource.io/cli | sh
-          chmod +x ./bin/deepsource
-          echo "$HOME/bin" >> $GITHUB_PATH
+          curl -sSL https://deepsource.io/cli | sh  # Download DeepSource CLI
+          chmod +x ./bin/deepsource  # Ensure the CLI is executable
+          echo "$HOME/bin" >> $GITHUB_PATH  # Add the binary location to the PATH
 
-      # Step 3: Configure DeepSource DSN (using the GitHub secret)
+      # Step 3: Verify Installation
+      - name: Verify Installation
+        run: ./bin/deepsource version  # Ensure the DeepSource CLI was installed correctly
+
+      # Step 4: Set up DeepSource DSN
       - name: Set up DeepSource DSN
         run: |
           echo "$DEEPSOURCE_DSN" > ~/.deepsource-dsn
 
-      # Step 4: Run DeepSource Analysis
+      # Step 5: Run DeepSource Scan
       - name: Run DeepSource Scan
         run: ./bin/deepsource analyze
         env:
-          DEEPSOURCE_DSN: ${{ secrets.DEEPSOURCE_DSN }}  # Using the DSN secret here
+          DEEPSOURCE_DSN: ${{ secrets.DEEPSOURCE_DSN }}  # Use the DSN from GitHub Secrets
