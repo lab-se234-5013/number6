@@ -11,14 +11,24 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      # Step 1: Checkout Code
       - name: Checkout Code
         uses: actions/checkout@v4
 
+      # Step 2: Install DeepSource CLI
       - name: Install DeepSource CLI
         run: |
           curl https://deepsource.io/cli | sh
           chmod +x ./bin/deepsource
           echo "$HOME/bin" >> $GITHUB_PATH
 
-      - name: Verify Installation
-        run: ./bin/deepsource version
+      # Step 3: Configure DeepSource DSN (using the GitHub secret)
+      - name: Set up DeepSource DSN
+        run: |
+          echo "$DEEPSOURCE_DSN" > ~/.deepsource-dsn
+
+      # Step 4: Run DeepSource Analysis
+      - name: Run DeepSource Scan
+        run: ./bin/deepsource analyze
+        env:
+          DEEPSOURCE_DSN: ${{ secrets.DEEPSOURCE_DSN }}  # Using the DSN secret here
